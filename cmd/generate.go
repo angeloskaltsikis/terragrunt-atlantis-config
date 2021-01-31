@@ -244,19 +244,15 @@ func createProject(sourcePath string) (*AtlantisProject, error) {
 
 	// Add other dependencies based on their relative paths. We always want to output with Unix path separators
 	for _, dependencyPath := range dependencies {
-		relativePath := ""
-		if !filepath.IsAbs(dependencyPath) {
-			absolutePath := makePathAbsolute(dependencyPath, sourcePath)
-			relativePath, err = filepath.Rel(absoluteSourceDir, absolutePath)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			relativePath, err = filepath.Rel(absoluteSourceDir, dependencyPath)
-			if err != nil {
-				return nil, err
-			}
+		absolutePath := dependencyPath
+		if !filepath.IsAbs(absolutePath) {
+			absolutePath = makePathAbsolute(dependencyPath, sourcePath)
 		}
+		relativePath, err := filepath.Rel(absoluteSourceDir, absolutePath)
+		if err != nil {
+			return nil, err
+		}
+
 		relativeDependencies = append(relativeDependencies, filepath.ToSlash(relativePath))
 	}
 
